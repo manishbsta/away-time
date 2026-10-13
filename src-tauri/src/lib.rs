@@ -216,8 +216,14 @@ fn show_preview(app: &tauri::AppHandle, runtime: &mut ProofRuntime) -> Result<()
         )
         .title("AwayTime — Break preview")
         .decorations(false)
-        .resizable(false)
-        .always_on_top(true)
+        // Linux, uniformly on every display server and desktop environment
+        // (X11 and Wayland, tiling and floating WMs/DEs): keep the window
+        // resizable so GTK does not lock min==max size hints (a fixed-size
+        // window) and skip always-on-top (_NET_WM_STATE_ABOVE). Tiling
+        // compositors treat fixed-size or keep-above windows as floating
+        // (e.g. niri, i3, sway), which breaks the intended preview.
+        .resizable(cfg!(target_os = "linux"))
+        .always_on_top(cfg!(not(target_os = "linux")))
         .visible_on_all_workspaces(true)
         .skip_taskbar(true)
         .visible(false)
@@ -244,6 +250,18 @@ fn show_preview(app: &tauri::AppHandle, runtime: &mut ProofRuntime) -> Result<()
                     monitor.size().width,
                     monitor.size().height,
                 ))
+            })
+            .and_then(|_| {
+                // Linux, uniformly on X11 and Wayland: open maximized so the
+                // preview occupies the whole screen. The window stays
+                // resizable (see above) so compositors keep it in the tiling
+                // layout instead of floating it; floating DEs (GNOME, KDE)
+                // present it as a normal maximized window.
+                if cfg!(target_os = "linux") {
+                    window.maximize()
+                } else {
+                    Ok(())
+                }
             })
             .and_then(|_| window.show())
         {
