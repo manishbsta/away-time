@@ -28,7 +28,7 @@ To build a development app on macOS:
 npm run tauri -- build --debug --bundles app
 ```
 
-The app bundle is generated under `target/debug/bundle/macos/`. This is a development artifact; release signing, notarization, and installers are Phase 8 work. The development profile omits debug symbols and incremental caches to limit disk use.
+The app bundle is generated under `target/debug/bundle/macos/`. This is a development artifact; trusted signing, notarization, and installed-release verification remain Phase 8 work. The development profile omits debug symbols and incremental caches to limit disk use.
 
 ## Verify
 
@@ -69,3 +69,11 @@ See [the data contract](docs/DATA_CONTRACT.md), [architecture](docs/ARCHITECTURE
 ## License
 
 AwayTime is licensed under the [GNU General Public License v3.0](LICENSE).
+
+## Automatic pre-releases
+
+Every push to `main`, including a merged pull request, runs the Phase 0 checks. After those checks and every installer build pass, `.github/workflows/release.yml` publishes one GitHub pre-release tagged `build-<run-number>-<short-commit>`. Each release includes Apple Silicon and Intel macOS `.dmg` installers, a Windows x64 `.exe` installer, a Linux x64 AppImage, SHA-256 checksums, and release notes. Pull requests run the same checks and installer builds without publishing. A failed job prevents publication. Re-running a workflow reuses its release tag. Manual runs are also available on `main`.
+
+Linux AppImages are built on Ubuntu 22.04 to avoid requiring libraries from a newer build host. Distribution compatibility remains unverified. macOS packages use ad-hoc signing without Apple notarization; Windows packages are unsigned. See [the pre-release notes](docs/PRE_RELEASE_NOTES.md) for installation details and current limits.
+
+These are experimental development downloads. Automatic publishing does not close AT-42, PH-00, or Phase 8; native Windows/Linux runtime proof and trusted distribution remain open.

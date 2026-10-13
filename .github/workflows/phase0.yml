@@ -1,5 +1,9 @@
 name: Phase 0 checks
-on: [push, pull_request]
+on:
+  workflow_call:
+env:
+  PYTHONUTF8: '1'
+
 permissions:
   contents: read
 jobs:

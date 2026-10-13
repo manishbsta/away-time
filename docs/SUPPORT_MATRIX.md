@@ -31,7 +31,7 @@ Every entry below is a requirement to investigate, not a claim of current platfo
 
 ## Local evidence — 2026-10-13
 
-Host: macOS 26.5.1, Apple Silicon arm64, Xcode 26.5, Rust 1.99.0, Node 22.22.1. Current workspace is uncommitted. Raw automated logs and host metadata are under `artifacts/phase0/`; these are local generated evidence, not hosted CI results.
+Host: macOS 26.5.1, Apple Silicon arm64, Xcode 26.5, Rust 1.99.0, Node 22.22.1. The foundation is committed to the project repository. Raw automated logs and host metadata are under `artifacts/phase0/`; these are local generated evidence, not hosted CI results.
 
 | Check | Evidence | Status |
 | --- | --- | --- |
@@ -53,3 +53,7 @@ Host: macOS 26.5.1, Apple Silicon arm64, Xcode 26.5, Rust 1.99.0, Node 22.22.1. 
 Tauri remains proposed. The full shared corpus and applicable native/UI checks are required on every agreed desktop target under AR-10/AT-36 before release. Current Mac compile and partial runtime evidence do not certify Windows/Linux support.
 
 DEC-01, DEC-02, PL-09, AT-37, and PH-00 remain open. Required Linux services, full macOS lifecycle/display/sleep checks, native Windows/Linux execution, and resource evidence must be resolved before stack acceptance. Record results per OS version, architecture, and desktop environment.
+
+## Development distribution
+
+Successful main builds publish experimental pre-releases with macOS arm64/x64 DMGs, a Windows x64 EXE, and a Linux x64 AppImage built on Ubuntu 22.04. All Phase 0 check jobs and installer builds must pass before publication. macOS uses ad-hoc signing without notarization; Windows is unsigned. Hosted packaging results establish build evidence only. AT-42 and PH-00 remain open until native runtime proof is recorded. See [the pre-release notes](PRE_RELEASE_NOTES.md).
