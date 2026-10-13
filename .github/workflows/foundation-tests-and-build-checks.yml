@@ -1,4 +1,4 @@
-name: Phase 0 checks
+name: Foundation tests and build checks
 on:
   workflow_call:
 env:
