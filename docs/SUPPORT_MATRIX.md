@@ -44,7 +44,7 @@ Host: macOS 26.5.1, Apple Silicon arm64, Xcode 26.5, Rust 1.99.0, Node 22.22.1. 
 | Window lifecycle | Main window hidden with app still running; quit wrote accrued work and the app exited; relaunch restored elapsed work without downtime | Basic runtime evidence; tray and Dock-reopen verification pending |
 | Sleep/wake | macOS workspace observer implemented; no real suspend/resume performed | Pending |
 | Windows | Native idle, power-message observer, and focus calls implemented | Uncompiled/unexecuted locally; CI pending |
-| Linux | X11 idle counter implemented; Wayland idle, sleep/wake, and focus restoration explicitly unavailable | Linux build/runtime proof pending |
+| Linux | X11 idle counter implemented; preview windows skip always-on-top and fixed-size hints and open maximized so tiling compositors (e.g. niri, i3, sway) tile them across the whole screen on X11 and Wayland, any desktop environment; Wayland idle, sleep/wake, and focus restoration explicitly unavailable | Linux build/runtime proof pending |
 | Hosted CI | macOS/Windows/Ubuntu check matrix and per-revision artifact upload configured | Not executed |
 | Resources | Development bundle about 27 MiB. Short main-process sample: median CPU 0.1%, max RSS 116.25 MiB; excludes WebKit helpers and is not an idle/battery budget | Total process memory, sustained idle CPU, detector churn, latency, and battery measurements pending |
 
