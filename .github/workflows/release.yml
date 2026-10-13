@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   checks:
-    uses: ./.github/workflows/phase0.yml
+    uses: ./.github/workflows/foundation-tests-and-build-checks.yml
 
   build:
     needs: checks
@@ -104,11 +104,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          tag="build-${GITHUB_RUN_NUMBER}-${GITHUB_SHA:0:7}"
+          version="$(python3 -c 'import json; print(json.load(open("package.json"))["version"])')"
+          tag="v${version}-pre.${GITHUB_RUN_NUMBER}"
+          title="AwayTime ${version} Pre-release ${GITHUB_RUN_NUMBER}"
           cp docs/PRE_RELEASE_NOTES.md artifacts/release-notes.md
           printf '\nCommit: `%s`\n' "$GITHUB_SHA" >> artifacts/release-notes.md
           if ! gh release view "$tag" >/dev/null 2>&1; then
-            gh release create "$tag" --target "$GITHUB_SHA" --title "AwayTime $tag" --draft --prerelease --notes-file artifacts/release-notes.md --generate-notes
+            gh release create "$tag" --target "$GITHUB_SHA" --title "$title" --draft --prerelease --notes-file artifacts/release-notes.md --generate-notes
           fi
           gh release upload "$tag" artifacts/release/* --clobber
-          gh release edit "$tag" --draft=false --prerelease --latest=false
+          gh release edit "$tag" --title "$title" --draft=false --prerelease --latest=false
