@@ -1,0 +1,34 @@
+name: Code quality
+
+on:
+  pull_request:
+  push:
+    branches: [develop, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  HUSKY: '0'
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Frontend lint
+        run: npm run lint
+      - name: Frontend formatting
+        run: npm run format:check
+      - name: TypeScript check
+        run: npm run typecheck
+      - name: Install Rust toolchain
+        run: rustup show
+      - name: Rust formatting
+        run: npm run format:rust:check
