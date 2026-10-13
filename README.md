@@ -15,12 +15,37 @@ Settings and sessions are local; no server or account is needed. SQLite history 
 
 ## Develop
 
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before creating a branch or commit.
+Branch names, commit messages, and pull request targets must follow its rules.
+
 Use Node 22.12+ and the Rust toolchain pinned in `rust-toolchain.toml`. Install the [Tauri system prerequisites](https://v2.tauri.app/start/prerequisites/) for your OS. The dependency lockfiles are checked in.
 
 ```sh
 npm ci
 npm run tauri -- dev
 ```
+
+### Git hooks and code quality
+
+`npm ci` installs Husky's local Git hooks. Before each commit, lint-staged runs
+Oxlint on staged JavaScript/TypeScript files and Prettier on supported staged
+files. Formatting fixes are included in the commit; lint errors stop it. Rust
+formatting is checked across the workspace without changing files. Before a
+push, the hook checks TypeScript across the frontend.
+
+```sh
+npm run lint
+npm run format:check
+npm run typecheck
+npm run format:rust:check
+```
+
+Use `npm run format` to format frontend files and `cargo fmt --all` to format
+Rust. The separate Code quality workflow repeats these checks on pull requests
+and pushes to `develop` or `main`. Make its `code-quality` job a required status
+check in branch rules to enforce them on GitHub. Existing Phase 0 checks cover
+tests and compilation. Local hooks can be skipped and are not a substitute for
+required GitHub checks. CI disables hook installation with `HUSKY=0`.
 
 To build a development app on macOS:
 
