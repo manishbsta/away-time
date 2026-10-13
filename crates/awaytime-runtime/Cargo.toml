@@ -1,0 +1,9 @@
+[package]
+name = "awaytime-runtime"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+[dependencies]
+awaytime-core = { path = "../awaytime-core" }
+serde.workspace = true

@@ -1,0 +1,23 @@
+[workspace]
+resolver = "2"
+members = ["crates/awaytime-core", "crates/awaytime-runtime", "crates/awaytime-persistence", "crates/awaytime-contract", "src-tauri"]
+default-members = ["crates/awaytime-core", "crates/awaytime-runtime", "crates/awaytime-persistence", "crates/awaytime-contract"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.99"
+license = "GPL-3.0-only"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+
+[profile.dev]
+debug = 0
+incremental = false
+
+[profile.test]
+debug = 0
+incremental = false

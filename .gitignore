@@ -1,0 +1,11 @@
+.DS_Store
+dist/
+__pycache__/
+*.pyc
+.tools/
+node_modules/
+target/
+.vite/
+coverage/
+artifacts/
+src-tauri/gen/

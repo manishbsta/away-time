@@ -1,0 +1,1416 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "T-001",
+      "feature_ids": [
+        "BR-01",
+        "BR-02"
+      ],
+      "description": "Valid 20-minute/20-second settings accepted.",
+      "request": {
+        "version": 1,
+        "operation": "validate_settings",
+        "input": {
+          "work_ms": 1200000,
+          "short_break_ms": 20000,
+          "snooze_limit": 3
+        }
+      },
+      "expected": {
+        "valid": true,
+        "errors": []
+      }
+    },
+    {
+      "id": "T-002",
+      "feature_ids": [
+        "BR-10"
+      ],
+      "description": "Zero work duration rejected.",
+      "request": {
+        "version": 1,
+        "operation": "validate_settings",
+        "input": {
+          "work_ms": 0,
+          "short_break_ms": 20000,
+          "snooze_limit": 3
+        }
+      },
+      "expected": {
+        "valid": false,
+        "errors": [
+          "work_ms"
+        ]
+      }
+    },
+    {
+      "id": "T-003",
+      "feature_ids": [
+        "BR-10"
+      ],
+      "description": "Negative break duration rejected.",
+      "request": {
+        "version": 1,
+        "operation": "validate_settings",
+        "input": {
+          "work_ms": 1200000,
+          "short_break_ms": -1,
+          "snooze_limit": 3
+        }
+      },
+      "expected": {
+        "valid": false,
+        "errors": [
+          "short_break_ms"
+        ]
+      }
+    },
+    {
+      "id": "T-004",
+      "feature_ids": [
+        "BR-10"
+      ],
+      "description": "Boolean work duration rejected.",
+      "request": {
+        "version": 1,
+        "operation": "validate_settings",
+        "input": {
+          "work_ms": true,
+          "short_break_ms": 20000,
+          "snooze_limit": 3
+        }
+      },
+      "expected": {
+        "valid": false,
+        "errors": [
+          "work_ms"
+        ]
+      }
+    },
+    {
+      "id": "T-005",
+      "feature_ids": [
+        "BR-10"
+      ],
+      "description": "Fractional milliseconds rejected.",
+      "request": {
+        "version": 1,
+        "operation": "validate_settings",
+        "input": {
+          "work_ms": 1.5,
+          "short_break_ms": 20000,
+          "snooze_limit": 3
+        }
+      },
+      "expected": {
+        "valid": false,
+        "errors": [
+          "work_ms"
+        ]
+      }
+    },
+    {
+      "id": "T-006",
+      "feature_ids": [
+        "BR-10"
+      ],
+      "description": "Negative snooze limit rejected.",
+      "request": {
+        "version": 1,
+        "operation": "validate_settings",
+        "input": {
+          "work_ms": 1200000,
+          "short_break_ms": 20000,
+          "snooze_limit": -1
+        }
+      },
+      "expected": {
+        "valid": false,
+        "errors": [
+          "snooze_limit"
+        ]
+      }
+    },
+    {
+      "id": "T-007",
+      "feature_ids": [
+        "BR-03",
+        "BR-10"
+      ],
+      "description": "Enabled long break requires a frequency.",
+      "request": {
+        "version": 1,
+        "operation": "validate_settings",
+        "input": {
+          "work_ms": 1200000,
+          "short_break_ms": 20000,
+          "snooze_limit": 3,
+          "long_break_ms": 300000,
+          "long_every": 0
+        }
+      },
+      "expected": {
+        "valid": false,
+        "errors": [
+          "long_every"
+        ]
+      }
+    },
+    {
+      "id": "T-008",
+      "feature_ids": [
+        "BR-01",
+        "BR-02",
+        "BR-07"
+      ],
+      "description": "Before threshold no break starts.",
+      "request": {
+        "version": 1,
+        "operation": "interval_session",
+        "input": {
+          "settings": {
+            "work_ms": 1000,
+            "short_break_ms": 200
+          },
+          "events": [
+            {
+              "at_ms": 999,
+              "type": "tick"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "phase": "working",
+        "work_elapsed_ms": 999,
+        "work_remaining_ms": 1,
+        "break_remaining_ms": 0,
+        "completed_breaks": 0,
+        "effects": []
+      }
+    },
+    {
+      "id": "T-009",
+      "feature_ids": [
+        "BR-01",
+        "BR-02",
+        "BR-07"
+      ],
+      "description": "Exact threshold starts one short break.",
+      "request": {
+        "version": 1,
+        "operation": "interval_session",
+        "input": {
+          "settings": {
+            "work_ms": 1000,
+            "short_break_ms": 200
+          },
+          "events": [
+            {
+              "at_ms": 1000,
+              "type": "tick"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "phase": "break",
+        "work_elapsed_ms": 1000,
+        "work_remaining_ms": 0,
+        "break_remaining_ms": 200,
+        "completed_breaks": 0,
+        "effects": [
+          "break_started"
+        ]
+      }
+    },
+    {
+      "id": "T-010",
+      "feature_ids": [
+        "BR-01",
+        "BR-02",
+        "BR-07"
+      ],
+      "description": "Repeated tick at threshold cannot duplicate a break.",
+      "request": {
+        "version": 1,
+        "operation": "interval_session",
+        "input": {
+          "settings": {
+            "work_ms": 1000,
+            "short_break_ms": 200
+          },
+          "events": [
+            {
+              "at_ms": 1000,
+              "type": "tick"
+            },
+            {
+              "at_ms": 1000,
+              "type": "tick"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "phase": "break",
+        "work_elapsed_ms": 1000,
+        "work_remaining_ms": 0,
+        "break_remaining_ms": 200,
+        "completed_breaks": 0,
+        "effects": [
+          "break_started"
+        ]
+      }
+    },
+    {
+      "id": "T-011",
+      "feature_ids": [
+        "BR-01",
+        "BR-02",
+        "BR-07"
+      ],
+      "description": "Completed rest returns to fresh work session.",
+      "request": {
+        "version": 1,
+        "operation": "interval_session",
+        "input": {
+          "settings": {
+            "work_ms": 1000,
+            "short_break_ms": 200
+          },
+          "events": [
+            {
+              "at_ms": 1000,
+              "type": "tick"
+            },
+            {
+              "at_ms": 1200,
+              "type": "tick"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "phase": "working",
+        "work_elapsed_ms": 0,
+        "work_remaining_ms": 1000,
+        "break_remaining_ms": 0,
+        "completed_breaks": 1,
+        "effects": [
+          "break_started",
+          "break_completed"
+        ]
+      }
+    },
+    {
+      "id": "T-012",
+      "feature_ids": [
+        "ID-02",
+        "BR-05"
+      ],
+      "description": "Paused time does not count as work.",
+      "request": {
+        "version": 1,
+        "operation": "interval_session",
+        "input": {
+          "settings": {
+            "work_ms": 1000,
+            "short_break_ms": 200
+          },
+          "events": [
+            {
+              "at_ms": 500,
+              "type": "pause"
+            },
+            {
+              "at_ms": 1500,
+              "type": "tick"
+            },
+            {
+              "at_ms": 1500,
+              "type": "resume"
+            },
+            {
+              "at_ms": 1999,
+              "type": "tick"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "phase": "working",
+        "work_elapsed_ms": 999,
+        "work_remaining_ms": 1,
+        "break_remaining_ms": 0,
+        "completed_breaks": 0,
+        "effects": []
+      }
+    },
+    {
+      "id": "T-013",
+      "feature_ids": [
+        "BR-05",
+        "OH-06"
+      ],
+      "description": "Stop prevents a future overdue break.",
+      "request": {
+        "version": 1,
+        "operation": "interval_session",
+        "input": {
+          "settings": {
+            "work_ms": 1000,
+            "short_break_ms": 200
+          },
+          "events": [
+            {
+              "at_ms": 500,
+              "type": "stop"
+            },
+            {
+              "at_ms": 99999,
+              "type": "tick"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "phase": "stopped",
+        "work_elapsed_ms": 500,
+        "work_remaining_ms": 500,
+        "break_remaining_ms": 0,
+        "completed_breaks": 0,
+        "effects": []
+      }
+    },
+    {
+      "id": "T-014",
+      "feature_ids": [
+        "RM-04",
+        "BR-07"
+      ],
+      "description": "Snooze at threshold wins over starting break.",
+      "request": {
+        "version": 1,
+        "operation": "interval_session",
+        "input": {
+          "settings": {
+            "work_ms": 1000,
+            "short_break_ms": 200
+          },
+          "events": [
+            {
+              "at_ms": 1000,
+              "type": "snooze",
+              "duration_ms": 300
+            },
+            {
+              "at_ms": 1299,
+              "type": "tick"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "phase": "working",
+        "work_elapsed_ms": 1299,
+        "work_remaining_ms": 1,
+        "break_remaining_ms": 0,
+        "completed_breaks": 0,
+        "effects": []
+      }
+    },
+    {
+      "id": "T-015",
+      "feature_ids": [
+        "DS-11"
+      ],
+      "description": "Snoozed break retains full rest duration.",
+      "request": {
+        "version": 1,
+        "operation": "interval_session",
+        "input": {
+          "settings": {
+            "work_ms": 1000,
+            "short_break_ms": 200
+          },
+          "events": [
+            {
+              "at_ms": 1000,
+              "type": "snooze",
+              "duration_ms": 300
+            },
+            {
+              "at_ms": 1300,
+              "type": "tick"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "phase": "break",
+        "work_elapsed_ms": 1300,
+        "work_remaining_ms": 0,
+        "break_remaining_ms": 200,
+        "completed_breaks": 0,
+        "effects": [
+          "break_started"
+        ]
+      }
+    },
+    {
+      "id": "T-016",
+      "feature_ids": [
+        "DS-01",
+        "ST-01"
+      ],
+      "description": "Skip does not count as completed rest.",
+      "request": {
+        "version": 1,
+        "operation": "interval_session",
+        "input": {
+          "settings": {
+            "work_ms": 1000,
+            "short_break_ms": 200
+          },
+          "events": [
+            {
+              "at_ms": 1000,
+              "type": "tick"
+            },
+            {
+              "at_ms": 1050,
+              "type": "skip"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "phase": "working",
+        "work_elapsed_ms": 0,
+        "work_remaining_ms": 1000,
+        "break_remaining_ms": 0,
+        "completed_breaks": 0,
+        "effects": [
+          "break_started",
+          "break_skipped"
+        ]
+      }
+    },
+    {
+      "id": "T-017",
+      "feature_ids": [
+        "BR-04"
+      ],
+      "description": "On-demand custom break has its requested duration.",
+      "request": {
+        "version": 1,
+        "operation": "interval_session",
+        "input": {
+          "settings": {
+            "work_ms": 1000,
+            "short_break_ms": 200
+          },
+          "events": [
+            {
+              "at_ms": 100,
+              "type": "start_custom",
+              "duration_ms": 600
+            },
+            {
+              "at_ms": 699,
+              "type": "tick"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "phase": "break",
+        "work_elapsed_ms": 0,
+        "work_remaining_ms": 1000,
+        "break_remaining_ms": 1,
+        "completed_breaks": 0,
+        "effects": [
+          "break_started"
+        ]
+      }
+    },
+    {
+      "id": "T-018",
+      "feature_ids": [
+        "BR-03"
+      ],
+      "description": "Long break follows configured completed-break cycle.",
+      "request": {
+        "version": 1,
+        "operation": "interval_session",
+        "input": {
+          "settings": {
+            "work_ms": 1000,
+            "short_break_ms": 200,
+            "long_break_ms": 500,
+            "long_every": 2
+          },
+          "events": [
+            {
+              "at_ms": 1000,
+              "type": "tick"
+            },
+            {
+              "at_ms": 1200,
+              "type": "tick"
+            },
+            {
+              "at_ms": 2200,
+              "type": "tick"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "phase": "break",
+        "work_elapsed_ms": 1000,
+        "work_remaining_ms": 0,
+        "break_remaining_ms": 500,
+        "completed_breaks": 1,
+        "effects": [
+          "break_started",
+          "break_completed",
+          "break_started"
+        ]
+      }
+    },
+    {
+      "id": "T-019",
+      "feature_ids": [
+        "SP-14",
+        "BR-07"
+      ],
+      "description": "Boundary pause prevents short-break start.",
+      "request": {
+        "version": 1,
+        "operation": "interval_session",
+        "input": {
+          "settings": {
+            "work_ms": 1000,
+            "short_break_ms": 200
+          },
+          "events": [
+            {
+              "at_ms": 1000,
+              "type": "pause"
+            },
+            {
+              "at_ms": 1500,
+              "type": "tick"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "phase": "paused",
+        "work_elapsed_ms": 1000,
+        "work_remaining_ms": 0,
+        "break_remaining_ms": 0,
+        "completed_breaks": 0,
+        "effects": []
+      }
+    },
+    {
+      "id": "T-020",
+      "feature_ids": [
+        "BR-07"
+      ],
+      "description": "One late tick crosses work and rest exactly once.",
+      "request": {
+        "version": 1,
+        "operation": "interval_session",
+        "input": {
+          "settings": {
+            "work_ms": 1000,
+            "short_break_ms": 200
+          },
+          "events": [
+            {
+              "at_ms": 1250,
+              "type": "tick"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "phase": "working",
+        "work_elapsed_ms": 50,
+        "work_remaining_ms": 950,
+        "break_remaining_ms": 0,
+        "completed_breaks": 1,
+        "effects": [
+          "break_started",
+          "break_completed"
+        ]
+      }
+    },
+    {
+      "id": "T-021",
+      "feature_ids": [
+        "BR-07"
+      ],
+      "description": "Completing rest and stopping at the same instant leaves stopped state.",
+      "request": {
+        "version": 1,
+        "operation": "interval_session",
+        "input": {
+          "settings": {
+            "work_ms": 1000,
+            "short_break_ms": 200
+          },
+          "events": [
+            {
+              "at_ms": 1000,
+              "type": "tick"
+            },
+            {
+              "at_ms": 1200,
+              "type": "stop"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "phase": "stopped",
+        "work_elapsed_ms": 0,
+        "work_remaining_ms": 1000,
+        "break_remaining_ms": 0,
+        "completed_breaks": 1,
+        "effects": [
+          "break_started",
+          "break_completed"
+        ]
+      }
+    },
+    {
+      "id": "T-022",
+      "feature_ids": [
+        "SP-14"
+      ],
+      "description": "No pause reasons permits break.",
+      "request": {
+        "version": 1,
+        "operation": "pause_gate",
+        "input": {
+          "reasons": [],
+          "excluded": []
+        }
+      },
+      "expected": {
+        "allowed": true,
+        "reasons": []
+      }
+    },
+    {
+      "id": "T-023",
+      "feature_ids": [
+        "SP-14"
+      ],
+      "description": "Two pause reasons remain independent and deduplicated.",
+      "request": {
+        "version": 1,
+        "operation": "pause_gate",
+        "input": {
+          "reasons": [
+            "video",
+            "meeting",
+            "meeting"
+          ],
+          "excluded": []
+        }
+      },
+      "expected": {
+        "allowed": false,
+        "reasons": [
+          "meeting",
+          "video"
+        ]
+      }
+    },
+    {
+      "id": "T-024",
+      "feature_ids": [
+        "SP-04",
+        "SP-14"
+      ],
+      "description": "Excluding one reason leaves the other active.",
+      "request": {
+        "version": 1,
+        "operation": "pause_gate",
+        "input": {
+          "reasons": [
+            "video",
+            "meeting"
+          ],
+          "excluded": [
+            "meeting"
+          ]
+        }
+      },
+      "expected": {
+        "allowed": false,
+        "reasons": [
+          "video"
+        ]
+      }
+    },
+    {
+      "id": "T-025",
+      "feature_ids": [
+        "SP-01"
+      ],
+      "description": "Excluded activity cannot block a break.",
+      "request": {
+        "version": 1,
+        "operation": "pause_gate",
+        "input": {
+          "reasons": [
+            "video"
+          ],
+          "excluded": [
+            "video"
+          ]
+        }
+      },
+      "expected": {
+        "allowed": true,
+        "reasons": []
+      }
+    },
+    {
+      "id": "T-026",
+      "feature_ids": [
+        "OH-02"
+      ],
+      "description": "Office Hours includes opening boundary.",
+      "request": {
+        "version": 1,
+        "operation": "office_hours",
+        "input": {
+          "windows": [
+            {
+              "day": 0,
+              "start_minute": 540,
+              "end_minute": 1080
+            }
+          ],
+          "day": 0,
+          "minute": 540
+        }
+      },
+      "expected": {
+        "active": true
+      }
+    },
+    {
+      "id": "T-027",
+      "feature_ids": [
+        "OH-02"
+      ],
+      "description": "Office Hours excludes closing boundary.",
+      "request": {
+        "version": 1,
+        "operation": "office_hours",
+        "input": {
+          "windows": [
+            {
+              "day": 0,
+              "start_minute": 540,
+              "end_minute": 1080
+            }
+          ],
+          "day": 0,
+          "minute": 1080
+        }
+      },
+      "expected": {
+        "active": false
+      }
+    },
+    {
+      "id": "T-028",
+      "feature_ids": [
+        "OH-02"
+      ],
+      "description": "Inactive weekday stays inactive.",
+      "request": {
+        "version": 1,
+        "operation": "office_hours",
+        "input": {
+          "windows": [
+            {
+              "day": 0,
+              "start_minute": 540,
+              "end_minute": 1080
+            }
+          ],
+          "day": 1,
+          "minute": 600
+        }
+      },
+      "expected": {
+        "active": false
+      }
+    },
+    {
+      "id": "T-029",
+      "feature_ids": [
+        "OH-03"
+      ],
+      "description": "Monday overnight hours include Tuesday 01:00.",
+      "request": {
+        "version": 1,
+        "operation": "office_hours",
+        "input": {
+          "windows": [
+            {
+              "day": 0,
+              "start_minute": 1320,
+              "end_minute": 120
+            }
+          ],
+          "day": 1,
+          "minute": 60
+        }
+      },
+      "expected": {
+        "active": true
+      }
+    },
+    {
+      "id": "T-030",
+      "feature_ids": [
+        "OH-03"
+      ],
+      "description": "Sunday overnight hours wrap into Monday.",
+      "request": {
+        "version": 1,
+        "operation": "office_hours",
+        "input": {
+          "windows": [
+            {
+              "day": 6,
+              "start_minute": 1320,
+              "end_minute": 120
+            }
+          ],
+          "day": 0,
+          "minute": 60
+        }
+      },
+      "expected": {
+        "active": true
+      }
+    },
+    {
+      "id": "T-031",
+      "feature_ids": [
+        "PB-05"
+      ],
+      "description": "Touching planned breaks do not overlap.",
+      "request": {
+        "version": 1,
+        "operation": "planned_overlap",
+        "input": {
+          "breaks": [
+            {
+              "id": "a",
+              "days": [
+                0
+              ],
+              "start_minute": 780,
+              "duration_minute": 30
+            },
+            {
+              "id": "b",
+              "days": [
+                0
+              ],
+              "start_minute": 810,
+              "duration_minute": 30
+            }
+          ]
+        }
+      },
+      "expected": {
+        "overlaps": []
+      }
+    },
+    {
+      "id": "T-032",
+      "feature_ids": [
+        "PB-05"
+      ],
+      "description": "Overlapping planned breaks rejected.",
+      "request": {
+        "version": 1,
+        "operation": "planned_overlap",
+        "input": {
+          "breaks": [
+            {
+              "id": "a",
+              "days": [
+                0
+              ],
+              "start_minute": 780,
+              "duration_minute": 30
+            },
+            {
+              "id": "b",
+              "days": [
+                0
+              ],
+              "start_minute": 800,
+              "duration_minute": 30
+            }
+          ]
+        }
+      },
+      "expected": {
+        "overlaps": [
+          [
+            "a",
+            "b"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "T-033",
+      "feature_ids": [
+        "PB-05"
+      ],
+      "description": "Sunday/Monday overlap detected across midnight.",
+      "request": {
+        "version": 1,
+        "operation": "planned_overlap",
+        "input": {
+          "breaks": [
+            {
+              "id": "a",
+              "days": [
+                6
+              ],
+              "start_minute": 1410,
+              "duration_minute": 60
+            },
+            {
+              "id": "b",
+              "days": [
+                0
+              ],
+              "start_minute": 0,
+              "duration_minute": 20
+            }
+          ]
+        }
+      },
+      "expected": {
+        "overlaps": [
+          [
+            "a",
+            "b"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "T-034",
+      "feature_ids": [
+        "PB-09"
+      ],
+      "description": "Overlapping away samples cannot double-count rest.",
+      "request": {
+        "version": 1,
+        "operation": "planned_rest",
+        "input": {
+          "start_ms": 1000,
+          "duration_ms": 1000,
+          "away": [
+            [
+              900,
+              1400
+            ],
+            [
+              1200,
+              1600
+            ],
+            [
+              1800,
+              2200
+            ]
+          ]
+        }
+      },
+      "expected": {
+        "credited_ms": 800,
+        "remaining_ms": 200
+      }
+    },
+    {
+      "id": "T-035",
+      "feature_ids": [
+        "PB-09"
+      ],
+      "description": "Full away window completes planned rest.",
+      "request": {
+        "version": 1,
+        "operation": "planned_rest",
+        "input": {
+          "start_ms": 1000,
+          "duration_ms": 1000,
+          "away": [
+            [
+              0,
+              3000
+            ]
+          ]
+        }
+      },
+      "expected": {
+        "credited_ms": 1000,
+        "remaining_ms": 0
+      }
+    },
+    {
+      "id": "T-036",
+      "feature_ids": [
+        "PB-09"
+      ],
+      "description": "Away time outside planned window earns no rest.",
+      "request": {
+        "version": 1,
+        "operation": "planned_rest",
+        "input": {
+          "start_ms": 1000,
+          "duration_ms": 1000,
+          "away": [
+            [
+              0,
+              900
+            ],
+            [
+              2100,
+              3000
+            ]
+          ]
+        }
+      },
+      "expected": {
+        "credited_ms": 0,
+        "remaining_ms": 1000
+      }
+    },
+    {
+      "id": "T-037",
+      "feature_ids": [
+        "DS-01",
+        "DS-02",
+        "DS-03"
+      ],
+      "description": "Casual mode permits immediate skip.",
+      "request": {
+        "version": 1,
+        "operation": "skip_allowed",
+        "input": {
+          "mode": "casual",
+          "elapsed_ms": 0,
+          "delay_ms": 3000,
+          "planned_skip_today": false
+        }
+      },
+      "expected": {
+        "allowed": true
+      }
+    },
+    {
+      "id": "T-038",
+      "feature_ids": [
+        "DS-01",
+        "DS-02",
+        "DS-03"
+      ],
+      "description": "Balanced mode blocks skip before delay.",
+      "request": {
+        "version": 1,
+        "operation": "skip_allowed",
+        "input": {
+          "mode": "balanced",
+          "elapsed_ms": 2999,
+          "delay_ms": 3000,
+          "planned_skip_today": false
+        }
+      },
+      "expected": {
+        "allowed": false
+      }
+    },
+    {
+      "id": "T-039",
+      "feature_ids": [
+        "DS-01",
+        "DS-02",
+        "DS-03"
+      ],
+      "description": "Balanced mode permits skip at exact delay.",
+      "request": {
+        "version": 1,
+        "operation": "skip_allowed",
+        "input": {
+          "mode": "balanced",
+          "elapsed_ms": 3000,
+          "delay_ms": 3000,
+          "planned_skip_today": false
+        }
+      },
+      "expected": {
+        "allowed": true
+      }
+    },
+    {
+      "id": "T-040",
+      "feature_ids": [
+        "DS-01",
+        "DS-02",
+        "DS-03"
+      ],
+      "description": "Hardcore blocks ordinary skip.",
+      "request": {
+        "version": 1,
+        "operation": "skip_allowed",
+        "input": {
+          "mode": "hardcore",
+          "elapsed_ms": 99999,
+          "delay_ms": 3000,
+          "planned_skip_today": false
+        }
+      },
+      "expected": {
+        "allowed": false
+      }
+    },
+    {
+      "id": "T-041",
+      "feature_ids": [
+        "PB-10"
+      ],
+      "description": "Planned skip-today bypasses hardcore restriction.",
+      "request": {
+        "version": 1,
+        "operation": "skip_allowed",
+        "input": {
+          "mode": "hardcore",
+          "elapsed_ms": 0,
+          "delay_ms": 3000,
+          "planned_skip_today": true
+        }
+      },
+      "expected": {
+        "allowed": true
+      }
+    },
+    {
+      "id": "T-042",
+      "feature_ids": [
+        "DS-06"
+      ],
+      "description": "Unlimited snooze has no accidental cap.",
+      "request": {
+        "version": 1,
+        "operation": "snooze_allowed",
+        "input": {
+          "session_limit": null,
+          "daily_limit": null,
+          "session_count": 100,
+          "daily_count": 100
+        }
+      },
+      "expected": {
+        "allowed": true
+      }
+    },
+    {
+      "id": "T-043",
+      "feature_ids": [
+        "DS-06"
+      ],
+      "description": "Session limit blocks snooze at boundary.",
+      "request": {
+        "version": 1,
+        "operation": "snooze_allowed",
+        "input": {
+          "session_limit": 2,
+          "daily_limit": 5,
+          "session_count": 2,
+          "daily_count": 1
+        }
+      },
+      "expected": {
+        "allowed": false
+      }
+    },
+    {
+      "id": "T-044",
+      "feature_ids": [
+        "DS-06"
+      ],
+      "description": "Daily limit blocks snooze at boundary.",
+      "request": {
+        "version": 1,
+        "operation": "snooze_allowed",
+        "input": {
+          "session_limit": 2,
+          "daily_limit": 5,
+          "session_count": 1,
+          "daily_count": 5
+        }
+      },
+      "expected": {
+        "allowed": false
+      }
+    },
+    {
+      "id": "T-045",
+      "feature_ids": [
+        "DS-06"
+      ],
+      "description": "Zero snooze limit blocks all snoozes.",
+      "request": {
+        "version": 1,
+        "operation": "snooze_allowed",
+        "input": {
+          "session_limit": 0,
+          "daily_limit": null,
+          "session_count": 0,
+          "daily_count": 0
+        }
+      },
+      "expected": {
+        "allowed": false
+      }
+    },
+    {
+      "id": "T-046",
+      "feature_ids": [
+        "DS-06"
+      ],
+      "description": "Snooze permitted while both limits remain.",
+      "request": {
+        "version": 1,
+        "operation": "snooze_allowed",
+        "input": {
+          "session_limit": 2,
+          "daily_limit": 5,
+          "session_count": 1,
+          "daily_count": 4
+        }
+      },
+      "expected": {
+        "allowed": true
+      }
+    },
+    {
+      "id": "T-047",
+      "feature_ids": [
+        "ST-01",
+        "ST-12"
+      ],
+      "description": "Empty statistics contain zeros, not NaN.",
+      "request": {
+        "version": 1,
+        "operation": "stats",
+        "input": {
+          "sessions_ms": []
+        }
+      },
+      "expected": {
+        "total_ms": 0,
+        "longest_ms": 0,
+        "median_ms": 0
+      }
+    },
+    {
+      "id": "T-048",
+      "feature_ids": [
+        "ST-01",
+        "ST-12"
+      ],
+      "description": "Odd session median uses middle sorted value.",
+      "request": {
+        "version": 1,
+        "operation": "stats",
+        "input": {
+          "sessions_ms": [
+            100,
+            300,
+            200
+          ]
+        }
+      },
+      "expected": {
+        "total_ms": 600,
+        "longest_ms": 300,
+        "median_ms": 200
+      }
+    },
+    {
+      "id": "T-049",
+      "feature_ids": [
+        "ST-01",
+        "ST-12"
+      ],
+      "description": "Even session median averages middle values.",
+      "request": {
+        "version": 1,
+        "operation": "stats",
+        "input": {
+          "sessions_ms": [
+            100,
+            200,
+            300,
+            400
+          ]
+        }
+      },
+      "expected": {
+        "total_ms": 1000,
+        "longest_ms": 400,
+        "median_ms": 250
+      }
+    },
+    {
+      "id": "T-050",
+      "feature_ids": [
+        "ST-11"
+      ],
+      "description": "Website breakdown does not add to active total.",
+      "request": {
+        "version": 1,
+        "operation": "stats",
+        "input": {
+          "sessions_ms": [
+            1000
+          ],
+          "app_usage_ms": {
+            "browser": 1000
+          },
+          "domain_usage_ms": {
+            "example.com": 1000
+          }
+        }
+      },
+      "expected": {
+        "total_ms": 1000,
+        "longest_ms": 1000,
+        "median_ms": 1000
+      }
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"$schema":"../gen/schemas/desktop-schema.json","identifier":"default","description":"Local proof windows; privileged operations stay in Rust.","windows":["main","break-*"],"permissions":["core:default"]}

@@ -1,0 +1,9 @@
+[package]
+name = "awaytime-contract"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+[dependencies]
+awaytime-core = { path = "../awaytime-core" }
+serde_json.workspace = true
