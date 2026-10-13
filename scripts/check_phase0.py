@@ -27,6 +27,7 @@ for path in (ROOT / 'crates/awaytime-core/src').glob('*.rs'):
             raise SystemExit(f'Core boundary violation: {path}: {forbidden}')
 run('fixtures', [sys.executable, 'run_contract_tests.py', '--check-fixtures'])
 run('harness', [sys.executable, 'run_contract_tests.py', '--self-test'])
+run('release-helpers', [sys.executable, '-m', 'unittest', 'discover', '-s', 'scripts', '-p', 'test_*.py'])
 run('format', ['cargo', 'fmt', '--all', '--', '--check'])
 run('foundation', ['cargo', 'test', '--locked', '--workspace', '--exclude', 'awaytime-desktop'])
 run('adapter-build', ['cargo', 'build', '--locked', '-p', 'awaytime-contract'])

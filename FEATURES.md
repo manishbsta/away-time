@@ -596,7 +596,7 @@ These scenarios require implementation; they are not part of the initial executa
 
 ### Phase completion
 
-- [ ] PH-08 — The accepted implementation passes the full shared corpus on every agreed desktop target, all applicable native/UI/regression tests pass on each agreed desktop target, soak/resource budgets are met, and each installed release is verified. Set measured budgets and distribution policy in DEC-05. Publishing follows a separate release action.
+- [ ] PH-08 — The accepted implementation passes the full shared corpus on every agreed desktop target, all applicable native/UI/regression tests pass on each agreed desktop target, soak/resource budgets are met, and each installed release is verified. Set measured budgets and distribution policy in DEC-05. Stable publication follows a separate release action. Experimental pre-releases are automatically published after successful checks and all installer builds on each push to main.
 
 ## Optional commercial features — deferred
 
@@ -667,7 +667,7 @@ These summary milestones refer to the phase checklists above; they do not replac
 
 - [ ] CORE-01 — Implement the core adapter; pass all 50 behavior cases by the end of Phase 6.
 - [ ] UI-01 — Deliver the usable cross-platform desktop app in Phase 2; complete native checks on each target as integrations land through Phase 7.
-- [ ] RELEASE-01 — Complete Phase 8 packaging and release checks; publication is a separate release action.
+- [ ] RELEASE-01 — Complete Phase 8 packaging and release checks; stable publication is a separate release action. Automated main builds publish experimental pre-releases with macOS DMGs, a Windows EXE, and a Linux AppImage, without closing the native verification gates.
 - [ ] M-01 — Phases 0–1: integration proof and stack/support decisions, portable architecture, persistence boundary, test adapter, and break/discipline core.
 - [ ] M-02 — Phase 2: usable desktop menu bar/tray, shared settings, break windows, reminders, keyboard controls, and baseline accessibility on each target.
 - [ ] M-03 — Phases 3–4: idle recovery, schedules, planned breaks, activity detection, calendar, and Focus.

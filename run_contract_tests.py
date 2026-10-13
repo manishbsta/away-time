@@ -66,13 +66,13 @@ def assert_subset(expected, actual, path='$'):
 
 
 def load_cases(path, tracker):
-    data = strict_json(path.read_text())
+    data = strict_json(path.read_text(encoding='utf-8'))
     if not isinstance(data, dict) or type(data.get('version')) is not int or data['version'] != 1:
         raise ValueError('Fixture file must have version 1.')
     cases = data.get('cases')
     if not isinstance(cases, list) or not cases:
         raise ValueError('Fixture file must contain nonempty cases.')
-    tracker_text = tracker.read_text()
+    tracker_text = tracker.read_text(encoding='utf-8')
     known_features = {ident for ident in re.findall(r'^- \[[ x]\] ([A-Z]+-\d+) —',
                                                     tracker_text, re.MULTILINE)
                       if ident.split('-')[0] in FEATURE_PREFIXES}
@@ -173,7 +173,7 @@ class HarnessTests(unittest.TestCase):
             def __init__(self, text):
                 self.text = text
 
-            def read_text(self):
+            def read_text(self, encoding=None):
                 return self.text
 
         fixture = dict(version=1, cases=[dict(
@@ -221,7 +221,7 @@ class HarnessTests(unittest.TestCase):
 
 
 def progress(tracker):
-    rows = re.findall(r'^- \[([ x])\] ([A-Z]+-\d+) —', tracker.read_text(), re.MULTILINE)
+    rows = re.findall(r'^- \[([ x])\] ([A-Z]+-\d+) —', tracker.read_text(encoding='utf-8'), re.MULTILINE)
     features = [(state, ident) for state, ident in rows
                 if ident.split('-')[0] in FEATURE_PREFIXES]
     done = sum(state == 'x' for state, _ in features)
